@@ -1,0 +1,33 @@
+﻿services:
+  web:
+    build: .
+    container_name: csharp-web
+    ports:
+      - "8081:8080"
+    environment:
+      DB_HOST: db
+      DB_USER: usuario
+      DB_PASSWORD: clave123
+      DB_NAME: holamundo
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: holamundo
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: clave123
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  db_data:
